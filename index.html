@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TLG Gaming</title>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <style>
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: linear-gradient(135deg, #1a1c24 0%, #2a2d3a 100%);
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .neon-text {
+            text-shadow: 0 0 10px #00ff8c, 0 0 20px #00ff8c, 0 0 30px #00ff8c;
+        }
+        .loader {
+            border-top-color: #00ff8c;
+            animation: spinner 1.5s linear infinite;
+        }
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="min-h-screen text-gray-100">
+    <!-- Navigation -->
+    <nav class="glass fixed w-full z-50 px-4 py-2">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-3xl font-bold neon-text">TLG GAMING</h1>
+            <div class="space-x-4">
+                <button onclick="showSection('tournaments')" class="px-4 py-2 rounded glass hover:bg-white hover:bg-opacity-10">Tournaments</button>
+                <button onclick="showSection('registration')" class="px-4 py-2 rounded glass hover:bg-white hover:bg-opacity-10">Register</button>
+                <button onclick="showSection('chat')" class="px-4 py-2 rounded glass hover:bg-white hover:bg-opacity-10">Chat</button>
+                <button onclick="showSection('support')" class="px-4 py-2 rounded glass hover:bg-white hover:bg-opacity-10">Support</button>
+                <button onclick="showLoginModal()" class="px-4 py-2 rounded glass hover:bg-white hover:bg-opacity-10">Admin</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto pt-24 px-4">
+        <!-- Tournaments Section -->
+        <section id="tournaments" class="space-y-6">
+            <div id="tournamentsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Tournaments will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Registration Section -->
+        <section id="registration" class="hidden">
+            <div class="glass p-6 rounded-lg max-w-2xl mx-auto">
+                <h2 class="text-2xl font-bold mb-6">Team Registration</h2>
+                <form id="registrationForm" class="space-y-4">
+                    <div>
+                        <label class="block mb-2">Team Name</label>
+                        <input type="text" required class="w-full p-2 rounded bg-gray-800 border border-gray-700">
+                    </div>
+                    <div id="playersContainer" class="space-y-4">
+                        <div class="player-entry">
+                            <label class="block mb-2">Player 1 (Captain)</label>
+                            <input type="text" placeholder="Name" required class="w-full p-2 rounded bg-gray-800 border border-gray-700 mb-2">
+                            <input type="text" placeholder="UID" required class="w-full p-2 rounded bg-gray-800 border border-gray-700">
+                        </div>
+                    </div>
+                    <button type="button" onclick="addPlayer()" class="px-4 py-2 rounded glass hover:bg-white hover:bg-opacity-10">Add Player</button>
+                    
+                    <div class="mt-4">
+                        <p class="mb-2">Payment Details:</p>
+                        <p class="bg-gray-800 p-2 rounded">UPI ID: tlggamers@axl</p>
+                        <label class="block mt-4 mb-2">Upload Payment Screenshot</label>
+                        <input type="file" accept="image/*" required class="w-full p-2 rounded bg-gray-800 border border-gray-700">
+                    </div>
+                    
+                    <button type="submit" class="w-full px-4 py-2 rounded glass hover:bg-white hover:bg-opacity-10 neon-text">Submit Registration</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Chat Section -->
+        <section id="chat" class="hidden">
+            <div class="glass p-6 rounded-lg max-w-4xl mx-auto h-[600px] flex flex-col">
+                <div id="chatMessages" class="flex-1 overflow-y-auto mb-4 space-y-2">
+                    <!-- Messages will be loaded here -->
+                </div>
+                <form id="chatForm" class="flex gap-2">
+                    <input type="text" placeholder="Type your message..." class="flex-1 p-2 rounded bg-gray-800 border border-gray-700">
+                    <button type="submit" class="px-6 py-2 rounded glass hover:bg-white hover:bg-opacity-10">Send</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Support Section -->
+        <section id="support" class="hidden">
+            <div class="glass p-6 rounded-lg max-w-4xl mx-auto">
+                <h2 class="text-2xl font-bold mb-6">Support</h2>
+                <div class="aspect-w-16 aspect-h-9">
+                    <iframe src="https://www.youtube.com/embed/videoseries?list=UU@tlggaming426" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-[400px] rounded"></iframe>
+                </div>
+                <a href="https://youtube.com/@tlggaming426?si=cZoU7kr50fVHXYqJ" target="_blank" class="block mt-4 text-center px-4 py-2 rounded glass hover:bg-white hover:bg-opacity-10">
+                    Visit Our YouTube Channel
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Admin Login Modal -->
+    <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+        <div class="glass p-6 rounded-lg w-96">
+            <h2 class="text-2xl font-bold mb-6">Admin Login</h2>
+            <form id="adminLoginForm" class="space-y-4">
+                <div>
+                    <label class="block mb-2">Username</label>
+                    <input type="text" id="adminUsername" required class="w-full p-2 rounded bg-gray-800 border border-gray-700">
+                </div>
+                <div>
+                    <label class="block mb-2">Password</label>
+                    <input type="password" id="adminPassword" required class="w-full p-2 rounded bg-gray-800 border border-gray-700">
+                </div>
+                <button type="submit" class="w-full px-4 py-2 rounded glass hover:bg-white hover:bg-opacity-10">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            // Add your Firebase config here
+            apiKey: "your-api-key",
+            authDomain: "your-auth-domain",
+            projectId: "your-project-id",
+            storageBucket: "your-storage-bucket",
+            messagingSenderId: "your-messaging-sender-id",
+            appId: "your-app-id"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const storage = firebase.storage();
+
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('main section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+        }
+
+        // Admin Login
+        function showLoginModal() {
+            document.getElementById('loginModal').classList.remove('hidden');
+        }
+
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+
+            if (username === 'TLGGAMING' && password === '9880117035') {
+                alert('Admin login successful!');
+                document.getElementById('loginModal').classList.add('hidden');
+                // Add admin panel functionality here
+            } else {
+                alert('Invalid credentials!');
+            }
+        });
+
+        // Team Registration
+        let playerCount = 1;
+
+        function addPlayer() {
+            playerCount++;
+            const playerHtml = `
+                <div class="player-entry">
+                    <label class="block mb-2">Player ${playerCount}</label>
+                    <input type="text" placeholder="Name" required class="w-full p-2 rounded bg-gray-800 border border-gray-700 mb-2">
+                    <input type="text" placeholder="UID" required class="w-full p-2 rounded bg-gray-800 border border-gray-700">
+                </div>
+            `;
+            document.getElementById('playersContainer').insertAdjacentHTML('beforeend', playerHtml);
+        }
+
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Handle form submission
+            alert('Registration submitted successfully!');
+        });
+
+        // Chat Functionality
+        document.getElementById('chatForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const input = this.querySelector('input');
+            const message = input.value.trim();
+            if (message) {
+                // Send message to Firebase
+                database.ref('messages').push({
+                    text: message,
+                    timestamp: Date.now()
+                });
+                input.value = '';
+            }
+        });
+
+        // Load initial tournaments
+        function loadTournaments() {
+            const tournaments = [
+                {
+                    title: 'PUBG Mobile Championship',
+                    date: '2024-01-20',
+                    prize: '$1000',
+                    image: 'https://source.unsplash.com/800x600/?gaming'
+                },
+                // Add more tournaments as needed
+            ];
+
+            const tournamentsList = document.getElementById('tournamentsList');
+            tournaments.forEach(tournament => {
+                const tournamentCard = `
+                    <div class="glass p-6 rounded-lg">
+                        <img src="${tournament.image}" alt="${tournament.title}" class="w-full h-48 object-cover rounded mb-4">
+                        <h3 class="text-xl font-bold mb-2">${tournament.title}</h3>
+                        <p class="mb-2">Date: ${tournament.date}</p>
+                        <p class="mb-4">Prize Pool: ${tournament.prize}</p>
+                        <button onclick="showSection('registration')" class="w-full px-4 py-2 rounded glass hover:bg-white hover:bg-opacity-10">Register Now</button>
+                    </div>
+                `;
+                tournamentsList.insertAdjacentHTML('beforeend', tournamentCard);
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            showSection('tournaments');
+            loadTournaments();
+        });
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
